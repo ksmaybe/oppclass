@@ -25,7 +25,6 @@ void Token_stream::putback(Token t)
 }
 Token Token_stream::get()
 {
-	//cout << "lslslsl";
 	if (full)
 	{
 		full = false;
@@ -35,7 +34,7 @@ Token Token_stream::get()
 	cin >> ch;
 	switch (ch)
 	{
-	case ';': case'q':
+	case ';': case'q': case'%':
 	case '(': case ')': case'+': case '-': case'*': case'/':
 		return Token{ ch };
 
@@ -92,6 +91,14 @@ double term()
 			left /= d;
 			t = ts.get();
 		break; }
+		case'%':
+			{
+			double d = primary();
+			while (left >= d)
+				left -= d;
+			t = ts.get();
+			break;
+			}
 		default:
 			ts.putback(t);
 			return left;
@@ -127,15 +134,16 @@ double expression()
 int main()
 {
 	double val = 0;
-    cout<<">";
+	cout << ">";
 	while(cin)
 	{
-		
-        Token t = ts.get();
+		Token t = ts.get();
 		if (t.kind == 'q') break;
-		if (t.kind == ';') {
+		if (t.kind == ';')
+		{
 			cout << '=' << val << endl;
-            cout <<">";}
+			cout << '>';
+		}
 		else
 			ts.putback(t);
 		val = expression();
