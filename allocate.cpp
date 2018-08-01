@@ -6,6 +6,7 @@ int main()
 	{
 		double* dpler = new double[10000];
 		cout << "Loop " << i << endl;
-		i++;
+        cout << "dpler[0]: " << dpler[0] <<endl;
+        i++;
 	}
 }
