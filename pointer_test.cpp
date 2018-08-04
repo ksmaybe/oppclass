@@ -14,7 +14,7 @@ int main()
 	cout << "int i = " << i << endl;
 	cout << "size of i is " << sizeof(i) << endl;
 	cout << "double d = " << d << endl;
-	cout << "size of d  is " << sizeof(d) << endl;
+	cout << "size of d  is " << sizeof(d) << endl <<endl;
 
 	cout << "cp = " << cp << " and its value is : " << *cp << endl;
 	cout << "size of cp is " << sizeof(cp) << endl;
