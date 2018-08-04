@@ -13,13 +13,19 @@ public:
 };
 double get_value(string s);
 void set_value(string s, double d);
+void print_vars();
 
 vector<Variable> var_table;
+
 double get_value(string s)
 {
 	for (Variable var : var_table)
-		if (var.name == s) return var.value;
+		if (var.name == s)
+			return var.value;
+	return 0.0;
+		
 }
+
 void set_value(string s, double d)
 {
 	for (Variable& var : var_table)
@@ -29,6 +35,12 @@ void set_value(string s, double d)
 			return;
 		}
 	var_table.push_back(Variable{ s,d });
+}
+
+void print_vars()
+{
+	for (Variable var : var_table)
+		cout << "Var " << var.name << "=" << var.value << endl;
 }
 
 
@@ -72,7 +84,7 @@ Token Token_stream::get()
 	cin >> ch;
 	switch (ch)
 	{
-	case ';': case'q': case'=':
+	case ';': case'q': case'=': case'%': case'p': case'^':
 	case '(': case ')': case'+': case '-': case'*': case'/':
 		return Token{ ch };
 
@@ -115,43 +127,77 @@ double primary() {
 	}
 	case name:
 		{
+		string s = t.name;
 		Token t = ts.get();
 			if(t.kind=='=')
 			{
 				double d = expression();
-				set_value(t.name, d);
+				set_value(s, d);
 				return d;
 			}
-			else {
+			else 
+			{
 				ts.putback(t);
-				return get_value(t.name);
+				return get_value(s);
 			}
 		}
+	case 'p':
+		print_vars();
+		break;
 	case number:
 		return t.value;
-	default:
+	case '-':
+		t = ts.get();
+		if (t.kind = number)
+			return (t.value*-1);
 		error("primary expected");
+	}
+}
+double expon()
+{
+	double left = primary();
+	Token t = ts.get();
+	while(true)
+	{
+		switch(t.kind)
+		{
+		case'^':
+		{left = pow(left, primary());
+		t = ts.get();
+		break; }
+		default:
+			ts.putback(t);
+			return left;
+		}
 	}
 }
 double term()
 {
-	double left = primary();
+	double left = expon();
 	Token t = ts.get();
 	while (true)
 	{
 		switch (t.kind)
 		{
 		case'*':
-			left *= primary();
+			left *= expon();
 			t = ts.get();
 			break;
 		case'/':
-		{	double d = primary();
+		{	double d = expon();
 		if (d == 0)
 			error("division by zero");
 		left /= d;
 		t = ts.get();
 		break; }
+		case'%':
+		{
+			double d = expon();
+			while (left >= d)
+				left -= d;
+			t = ts.get();
+			break;
+		}
 		default:
 			ts.putback(t);
 			return left;
@@ -190,7 +236,7 @@ int main()
 		if (t.kind == 'q') break;
 		if (t.kind == ';')
 		{
-			cout << '=' << val << endl;
+			cout << '=' << setprecision(10) <<val << endl;
 			cout << '>';
 		}
 		else
