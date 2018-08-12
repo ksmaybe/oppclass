@@ -3,6 +3,9 @@
 Token_stream ts;
 vector<Variable> var_table;
 vector<string> history;
+Token hi{ 'h',0 };
+Token hit{ 'h',0 };
+Token line{ 'h',"" };
 
 
 Complex get_value(string s)
@@ -49,11 +52,17 @@ Token Token_stream::get()
 	cin >> ch;
 	switch (ch)
 	{
-	case ';': case'q': case'=': case'%': case'p': case'^':
-	case '(': case ')': case'+': case '-': case'*': case'/':
+	case'h':
+		hi.value1 += 1;
 		return Token{ ch };
+	case ';':
+	case'q': case'=': case'%': case'p': case'^':
+	case '(': case ')': case'+': case '-': case'*': case'/':
+	{line.name += ch;
+	return Token{ ch }; }
 	case 'i':
 	{
+		line.name += ch;
 		Complex comp;
 		comp.setComplex(0,1);
 		return Token{ complex ,comp };
@@ -64,9 +73,17 @@ Token Token_stream::get()
 		cin.putback(ch);
 		double val;
 		cin >> val;
+		ostringstream strs;
+		strs << val;
+		string str = strs.str();
+		line.name += str;
 		Complex comp;
 		char k = cin.get();
-		if (k == 'i') comp.setComplex(0, val);
+		if (k == 'i')
+		{
+			comp.setComplex(0, val);
+			line.name += 'i';
+		}
 		else
 		{
 			cin.putback(k);
@@ -82,6 +99,7 @@ Token Token_stream::get()
 			s += ch;
 			while (cin.get(ch) && isalpha(ch)) s += ch;
 			cin.putback(ch);
+			line.name += s;
 			return Token{ name, s };
 		}
 		return Token{ invalid };

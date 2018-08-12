@@ -148,9 +148,11 @@ public:
 	char kind;
 	Complex value;
 	string name;
+	double value1;
 	Token(char ch) :kind{ ch } {};
 	Token(char ch, Complex val) :kind{ ch }, value{ val } {};
 	Token(char ch, string n) :kind{ ch }, name{ n } {};
+	Token(char ch, double val) :kind{ ch }, value1{ val } {};
 
 };
 
@@ -171,3 +173,7 @@ Complex operator / (const Complex& c);*/
 
 extern Token_stream ts;
 extern vector<Variable> var_table;
+extern vector<string> history;
+extern Token hi;
+extern Token hit;
+extern Token line;
