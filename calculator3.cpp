@@ -14,29 +14,27 @@ int main()
 	{
 		Token t = ts.get();
 
-
-
-			if (t.kind == 'q') break;
-			if (t.kind == ';')
-			{
-				if (hi.value1 == 0) {
-					history.push_back(line.name);
-					hit.value1 += 1;
-					line.name = "";
-					cout << '=' << val << endl << endl;
-					cout << '>';
-				}
-				else
-				{
-					cout << '=' << history[hit.value1-hi.value1] << endl << endl;
-					hi.value1 = 0;
-					cout << '>';
-				}
+		if (t.kind == 'q') break;
+		if (t.kind == ';')
+		{
+			if (hi.value1 == 0) {
+				history.push_back(line.name);
+				hit.value1 += 1;
+				line.name = "";
+				cout << '=' << val << endl << endl;
+				cout << '>';
 			}
 			else
-				ts.putback(t);
-			val = expression();
-		
+			{
+				cout << "->" << history[hit.value1-hi.value1] << endl << endl;
+				hi.value1 = 0;
+				cout << '>';
+			}
+		}
+		else
+			ts.putback(t);
+		val = expression();
+	
 	}
 	keep_window_open();
 	return 0;

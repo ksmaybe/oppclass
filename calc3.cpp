@@ -1,4 +1,5 @@
 #include "calc3.h"
+#include <cmath>
 
 Token_stream ts;
 vector<Variable> var_table;
@@ -6,7 +7,7 @@ vector<string> history;
 Token hi{ 'h',0 };
 Token hit{ 'h',0 };
 Token line{ 'h',"" };
-
+long double pi = atan(1) * 4;
 
 Complex get_value(string s)
 {
@@ -56,7 +57,7 @@ Token Token_stream::get()
 		hi.value1 += 1;
 		return Token{ ch };
 	case ';':
-	case'q': case'=': case'%': case'p': case'^':
+	case'q': case'=': case'%': case'p': case'^': case'|':
 	case '(': case ')': case'+': case '-': case'*': case'/':
 	{line.name += ch;
 	return Token{ ch }; }
@@ -64,8 +65,94 @@ Token Token_stream::get()
 	{
 		line.name += ch;
 		Complex comp;
-		comp.setComplex(0,1);
+		comp.setComplex(0, 1);
 		return Token{ complex ,comp };
+	}
+	case's': {
+		char a1 = cin.get();
+		if (a1 == 'i')
+		{
+			char a2 = cin.get();
+			if (a2 == 'n')
+			{
+				double val;
+				cin >> val;
+				ostringstream strs;
+				strs << val;
+				string str = strs.str();
+				line.name += "sin" + str;
+				Complex comp;
+				comp.setComplex(sin(val / 180 * pi), 0);
+				return Token{ complex,comp };
+
+			}
+			cin.putback(a2);
+
+		}cin.putback(a1);
+		string s;
+		s += ch;
+		while (cin.get(ch) && isalpha(ch)) s += ch;
+		cin.putback(ch);
+		line.name += s;
+		return Token{ name, s };
+
+	}
+	case'c': {
+		char a1 = cin.get();
+		if (a1 == 'o')
+		{
+			char a2 = cin.get();
+			if (a2 == 's')
+			{
+				double val;
+				cin >> val;
+				ostringstream strs;
+				strs << val;
+				string str = strs.str();
+				line.name += "cos" + str;
+				Complex comp;
+				comp.setComplex(cos(val / 180 * pi), 0);
+				return Token{ complex,comp };
+
+			}
+			cin.putback(a2);
+
+		}cin.putback(a1);
+		string s;
+		s += ch;
+		while (cin.get(ch) && isalpha(ch)) s += ch;
+		cin.putback(ch);
+		line.name += s;
+		return Token{ name, s };
+	}
+
+	case't': {
+		char a1 = cin.get();
+		if (a1 == 'a')
+		{
+			char a2 = cin.get();
+			if (a2 == 'n')
+			{
+				double val;
+				cin >> val;
+				ostringstream strs;
+				strs << val;
+				string str = strs.str();
+				line.name += "tan" + str;
+				Complex comp;
+				comp.setComplex(tan(val / 180 * pi), 0);
+				return Token{ complex,comp };
+
+			}
+			cin.putback(a2);
+
+		}cin.putback(a1);
+		string s;
+		s += ch;
+		while (cin.get(ch) && isalpha(ch)) s += ch;
+		cin.putback(ch);
+		line.name += s;
+		return Token{ name, s };
 	}
 	case'.': case'0': case'1': case'2': case'3': case'4': case'5':
 	case'6': case'7': case'8': case'9':
@@ -114,6 +201,14 @@ Complex expression();
 Complex primary() {
 	Token t = ts.get();
 	switch (t.kind) {
+	case'|':
+	{
+		Complex d = expression();
+		t = ts.get();
+		if (t.kind != '|') error("'|' expected");
+		d.setComplex(abs(d.getreal()), d.getimag());
+		return d;
+	}						
 	case'(':
 	{
 		Complex d = expression();
